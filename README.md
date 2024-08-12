@@ -11,5 +11,4 @@ bash run.sh
 
 ## サンプル
 ![62thSingleDance_165_182_1k_audio](https://github.com/user-attachments/assets/f3f23828-8659-4785-ae67-2ec1176b2a98)
-<div><video controls src="<!---https://github.com/user-attachments/assets/fb2abf88-c83d-4449-8fd2-3aac92939859--->" muted="false"></video></div>
 

@@ -1,4 +1,5 @@
 # Oshikatsu_
+・トラッキングは[YOLOv8](https://github.com/ultralytics/ultralytics)を使用 
 ・顔の切り出しは[YOLOv8-face](https://github.com/akanametov/yolo-face)を使用  
 ・顔識別は[facenet-pytorch](https://github.com/timesler/facenet-pytorch)を使用
 ![proposed](https://github.com/user-attachments/assets/f9139ddf-8f7a-4ba1-8de4-4f1518be09fc)

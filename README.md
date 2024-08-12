@@ -4,12 +4,13 @@
 ![proposed](https://github.com/user-attachments/assets/f9139ddf-8f7a-4ba1-8de4-4f1518be09fc)
 
 ## 実行
-設定の項目を埋めて実行  
+必要なものは以下URLからダウンロードしてください
 ### URL
 ・[YOLOv8 weights](https://github.com/ultralytics/ultralytics)  
 ・[YOLO face weights](https://github.com/akanametov/yolo-face)  
 ・[Tracking Model](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/trackers)
 ### コマンド
+設定の項目を埋めて実行
 ```
 bash run.sh
 ```

@@ -18,4 +18,5 @@ bash run.sh
 
 
 ## サンプル
+元動画：[【Dance Practice】AKB48 「アイドルなんかじゃなかったら」 Moving ver.](https://www.youtube.com/watch?v=rslcM7e-7WI)
 <div><video controls src="https://github.com/user-attachments/assets/b979c8d6-d863-4f08-a82a-c2f4fc81e27a" muted="false"></video></div>

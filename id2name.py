@@ -91,7 +91,6 @@ def main(args):
             if len(xyxy_list2) == 0: continue
             l = 10 ** 10
             for (f_x1_, f_y1_, f_x2_, f_y2_), f_conf_ in zip(xyxy_list2, conf_list2):
-                if f_conf_ < 0.5: continue
                 l_ = (f_x1_ + f_x2_ + h_x1 - h_x2) ** 2 + (f_y1_ + f_y2_) ** 2
                 if l_ < l:
                     l = l_

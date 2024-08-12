@@ -1,7 +1,7 @@
 # Oshikatsu_
 ・顔の切り出しは[YOLOv8-face](https://github.com/akanametov/yolo-face)を使用  
 ・顔識別は[facenet-pytorch](https://github.com/timesler/facenet-pytorch)を使用
-
+![proposed](https://github.com/user-attachments/assets/0d00ff23-6d23-4e4f-abcc-e5c872db83fd)
 
 ## 実行
 設定の項目を埋めて実行  

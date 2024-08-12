@@ -5,6 +5,9 @@
 
 ## 実行
 設定の項目を埋めて実行
+・[YOLOv8 weights](https://github.com/ultralytics/ultralytics)
+・[YOLO face weights](https://github.com/akanametov/yolo-face)
+・[Tracking Model](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/trackers)
 ```
 bash run.sh
 ```

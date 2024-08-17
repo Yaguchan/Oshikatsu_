@@ -80,22 +80,16 @@ def main(args):
             boxes = yolo.predict(human_image, verbose=False)[0].boxes
             xyxy_list = boxes.xyxy.tolist()
             conf_list = boxes.conf.tolist()
-            xyxy_list2 = []
-            conf_list2 = []
-            # 足切り①（画像サイズ, yolo-confidence）
-            for f_xyxy_, f_conf_ in zip(xyxy_list, conf_list):
-                f_x1_, f_y1_, f_x2_, f_y2_ = f_xyxy_
-                if min(f_x2_-f_x1_, f_y2_-f_y1_) < 30 or f_conf_ < 0.5: continue
-                xyxy_list2.append(f_xyxy_)
-                conf_list2.append(f_conf_)
-            if len(xyxy_list2) == 0: continue
+            if len(xyxy_list) == 0: continue
             l = 10 ** 10
-            for (f_x1_, f_y1_, f_x2_, f_y2_), f_conf_ in zip(xyxy_list2, conf_list2):
+            for (f_x1_, f_y1_, f_x2_, f_y2_), f_conf_ in zip(xyxy_list, conf_list):
                 l_ = (f_x1_ + f_x2_ + h_x1 - h_x2) ** 2 + (f_y1_ + f_y2_) ** 2
                 if l_ < l:
                     l = l_
                     f_x1, f_y1, f_x2, f_y2 = f_x1_, f_y1_, f_x2_, f_y2_
                     f_conf = f_conf_
+            # 足切り①（画像サイズ, yolo-confidence）
+            if min(f_x2-f_x1, f_y2-f_y1) < 30 or f_conf < 0.5: continue
             human_image = human_image[..., ::-1]
             face_image = Image.fromarray(human_image[int(f_y1):int(f_y2), int(f_x1):int(f_x2)])
             face_image = transform(face_image)

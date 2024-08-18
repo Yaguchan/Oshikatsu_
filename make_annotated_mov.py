@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from moviepy.editor import VideoFileClip, AudioFileClip
 
 
-# python make_annotated_mov.py --mov 62thSingleDance_178_182_1k --member-enjp-list face_identification/member_list/member.csv --font data/font/NotoSansJP-Black.ttf
+# python make_annotated_mov.py --mov 62thSingleDance_1k --member-enjp-list face_identification/member_list/member.csv --font data/font/NotoSansJP-Black.ttf --member-name YuiOguri
 
 
 def choose_colors(num_colors):
@@ -26,7 +26,10 @@ def main(args):
     video_path = f'data/mp4/{args.mov}.mp4'
     track_path = f'output/labels/{args.mov}/t_id_xyxy.txt'
     name_path= f'output/labels/{args.mov}/id_name.txt'
-    output_path = f'output/annotated_mov/{args.mov}.mp4'
+    if args.member_name == 'all':
+        output_path = f'output/annotated_mov/{args.mov}.mp4'
+    else:
+        output_path = f'output/annotated_mov/{args.mov}_{args.member_name}.mp4'
     os.makedirs('/'.join(output_path.split('/')[:-1]), exist_ok=True)
 
     # 出力ファイルの設定
@@ -53,18 +56,18 @@ def main(args):
     
     # track data
     ts_idxyxy = [[] for _ in range(num_frame+1)]
-    ids = []
+    member_ids = []
     with open(track_path, 'r') as file:
         for line in file:
-            t, id, x1, y1, x2, y2 = line.strip().split(' ')
-            ids.append(int(id))
-            ts_idxyxy[int(t)].append([int(id), x1, y1, x2, y2])
+            t, member_id, x1, y1, x2, y2 = line.strip().split(' ')
+            t, member_id, x1, y1, x2, y2 = int(t), int(member_id), int(x1), int(y1), int(x2), int(y2)
+            member_ids.append(member_id)
+            ts_idxyxy[t].append([member_id, x1, y1, x2, y2])
             
     # dict
-    ids = sorted(list(set(ids)))
-    id_to_member = {id:member for id, member in zip(ids, members)}
+    member_ids = sorted(list(set(member_ids)))
+    id_to_member = {member_id:member for member_id, member in zip(member_ids, members)}
     member_to_color = {member:color for member, color in zip(set(members), colors)}
-    member_to_color['nan'] = (255, 255, 255) # 不明(nan)は灰色
 
     # draw bbox
     print('ids + names -> mov')
@@ -78,11 +81,11 @@ def main(args):
             frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             draw = ImageDraw.Draw(frame)
         for idxyxy in ts_idxyxy[frame_count]:
-            id, x1, y1, x2, y2 = idxyxy
-            member = id_to_member[id]
-            if member == 'nan': continue
+            member_id, x1, y1, x2, y2 = idxyxy
+            member = id_to_member[member_id]
+            # unknown member or not choice member
+            if member == 'nan' or (args.member_name != 'all' and args.member_name != member): continue
             B, G, R = map(int, member_to_color[member])
-            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             if args.jp:
                 member = en2jp[member]
                 draw.rectangle([x1, y1, x2, y2], outline=(R,G,B), width=2)
@@ -121,5 +124,6 @@ if __name__ == '__main__':
     parser.add_argument('--member-enjp-list', type=str, help='メンバーリスト(.csv)のパスを指定してください', required=True)
     parser.add_argument('--font', type=str, help='フォント(.ttf)のパスを指定してください', required=True)
     parser.add_argument('--jp', default=True, help='名前を日本語表記する場合True/しない場合False')
+    parser.add_argument('--member-name', type=str, default='all', help='特定のメンバーのみプロットする場合指定してください')
     args = parser.parse_args()
     main(args)

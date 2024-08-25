@@ -15,4 +15,4 @@ python mov2ids.py --mov $MOVNAME --yolo-weights $YOLO_WEIGHTS --tracking-yaml $T
 # 2.顔識別
 python id2name.py --mov $MOVNAME --member-list $MEMBER_LIST --yolo-face-weights $YOLO_FACE_WEIGHTS --facenet-weights $FACENET_WEIGHTS --device $DEVICE
 # 3.動画作成
-python make_annotated_mov.py --mov $MOVNAME --member-enjp-list $MEMBER_ENJP_LIST --font $FONT
+python make_mov.py --mov $MOVNAME --member-enjp-list $MEMBER_ENJP_LIST --font $FONT

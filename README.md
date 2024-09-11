@@ -5,7 +5,6 @@
 必要なものは以下URLからダウンロードしてください
 ### URL
 ・[YOLOv8 weights](https://github.com/ultralytics/ultralytics)  
-・[YOLO face weights](https://github.com/akanametov/yolo-face)  
 ・[Tracking Model](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/trackers)
 ### 環境構築
 ```
@@ -14,7 +13,7 @@ conda env create -f env.yaml
 ### コマンド
 設定の項目を埋めて実行
 ```
-bash run.sh
+bash run/run.sh
 ```
 
 

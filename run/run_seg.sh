@@ -12,6 +12,6 @@ DEVICE="cuda:0"                                                     # cuda or mp
 # 1.トラッキング
 python seg_tracking/mov2ids.py --mov $MOVNAME --yolo-weights $YOLO_WEIGHTS --tracking-yaml $TRACKING_YAML
 # 2.顔識別
-python seg_tracking/id2name_mtcnn.py --mov $MOVNAME --member-list $MEMBER_LIST --facenet-weights $FACENET_WEIGHTS --device $DEVICE
+python seg_tracking/id2name.py --mov $MOVNAME --member-list $MEMBER_LIST --facenet-weights $FACENET_WEIGHTS --device $DEVICE
 # 3.動画作成
 python seg_tracking/make_mov.py --mov $MOVNAME --member-enjp-list $MEMBER_ENJP_LIST --font $FONT

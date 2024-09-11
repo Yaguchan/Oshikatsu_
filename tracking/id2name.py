@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append(os.pardir)
 import cv2
 import torch
 import argparse
@@ -7,12 +9,14 @@ from PIL import Image
 from tqdm import tqdm
 from ultralytics import YOLO
 from collections import Counter
+from facenet_pytorch import MTCNN
 from torchvision import transforms
 from face_identification.model import FaceNet
 
 
-# python id2name.py --mov 62thSingleDance_178_182_1k --member-list face_identification/member_list/62thsingle.txt --yolo-face-weights weights/yolov8n-face.pt --facenet-weights weights/facenet_62thsingle.pt --device cuda
+# python tracking/id2name.py --mov 62thSingleDance_178_182_1k --member-list face_identification/member_list/62thsingle.txt --facenet-weights weights/facenet_62thsingle.pt --device cuda
 THRES = 0.99
+MINSIZE = 32
 
 
 transform = transforms.Compose([
@@ -45,7 +49,13 @@ def main(args):
     
     # model
     device = torch.device(args.device)
-    yolo = YOLO(args.yolo_face_weights)
+    # mtcnn
+    mtcnn = MTCNN(
+        image_size=160, margin=0, min_face_size=MINSIZE,
+        thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True,
+        device=device
+    )
+    # facenet
     facenet = FaceNet(num_classes-1, device)
     facenet.load_state_dict(torch.load(args.facenet_weights, map_location=device))
     facenet.to(device)
@@ -73,23 +83,15 @@ def main(args):
         ret, frame = cap.read()
         if not ret:
             break
-        # その時間のトラッキングの結果を yolo-face -> facenet
+        # その時間のトラッキングの結果を mtcnn -> facenet
         for idx_xyxy in ts[frame_count]:
             idx, h_x1, h_y1, h_x2, h_y2 = idx_xyxy
             human_image = frame[h_y1:h_y2, h_x1:h_x2]
-            boxes = yolo.predict(human_image, verbose=False)[0].boxes
-            xyxy_list = boxes.xyxy.tolist()
-            conf_list = boxes.conf.tolist()
-            if len(xyxy_list) == 0: continue
-            l = 10 ** 10
-            for (f_x1_, f_y1_, f_x2_, f_y2_), f_conf_ in zip(xyxy_list, conf_list):
-                l_ = (f_x1_ + f_x2_ + h_x1 - h_x2) ** 2 + (f_y1_ + f_y2_) ** 2
-                if l_ < l:
-                    l = l_
-                    f_x1, f_y1, f_x2, f_y2 = f_x1_, f_y1_, f_x2_, f_y2_
-                    f_conf = f_conf_
-            # 足切り①（画像サイズ, yolo-confidence）
-            if min(f_x2-f_x1, f_y2-f_y1) < 30 or f_conf < 0.5: continue
+            if human_image.shape[0] < MINSIZE or human_image.shape[1] < MINSIZE: continue
+            xyxy_list, _, landmarks = mtcnn.detect(human_image, landmarks=True)
+            if xyxy_list is None: continue
+            if len(xyxy_list) != 1: continue
+            f_x1, f_y1, f_x2, f_y2 = xyxy_list[0]
             human_image = human_image[..., ::-1]
             face_image = Image.fromarray(human_image[int(f_y1):int(f_y2), int(f_x1):int(f_x2)])
             face_image = transform(face_image)
@@ -132,7 +134,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--mov', type=str, help='動画(mp4)のパスを指定してください', required=True)
     parser.add_argument('--member-list', type=str, help='メンバーリスト(.txt)のパスを指定してください', required=True)
-    parser.add_argument('--yolo-face-weights', type=str, help='YOLO(顔検出)の重みを指定してください', required=True)
     parser.add_argument('--facenet-weights', type=str, help='FaceNetの重みを指定してください', required=True)
     parser.add_argument('--device', type=str, help='cuda device or cpu', required=True)
     args = parser.parse_args()

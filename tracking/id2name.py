@@ -90,8 +90,12 @@ def main(args):
             if human_image.shape[0] < MINSIZE or human_image.shape[1] < MINSIZE: continue
             xyxy_list, _, landmarks = mtcnn.detect(human_image, landmarks=True)
             if xyxy_list is None: continue
-            if len(xyxy_list) != 1: continue
-            f_x1, f_y1, f_x2, f_y2 = xyxy_list[0]
+            l = 10 ** 10
+            for (f_x1_, f_y1_, f_x2_, f_y2_) in xyxy_list:
+                l_ = (f_x1_ + f_x2_ + h_x1 - h_x2) ** 2 + (f_y1_ + f_y2_) ** 2
+                if l_ < l:
+                    l = l_
+                    f_x1, f_y1, f_x2, f_y2 = f_x1_, f_y1_, f_x2_, f_y2_
             human_image = human_image[..., ::-1]
             face_image = Image.fromarray(human_image[int(f_y1):int(f_y2), int(f_x1):int(f_x2)])
             face_image = transform(face_image)
